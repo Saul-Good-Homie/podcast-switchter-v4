@@ -1,17 +1,29 @@
 const express = require('express')
 const request = require('request');
 const dotenv = require('dotenv');
+const port = process.env.PORT || 5000;
+var spotify_client_id = process.env.SPOTIFY_CLIENT_ID
+var spotify_client_secret = process.env.SPOTIFY_CLIENT_SECRET
 
-const port = 8888
+
+var spotify_redirect_uri = 'http://localhost:3000/auth/callback'
 
 global.access_token = ''
 
 dotenv.config()
 
-var spotify_client_id = process.env.SPOTIFY_CLIENT_ID
-var spotify_client_secret = process.env.SPOTIFY_CLIENT_SECRET
+//check node environment for production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../build')));
 
-var spotify_redirect_uri = 'http://localhost:3000/auth/callback'
+  app.get('*', (req, res) =>
+    res.sendFile(
+      path.resolve(__dirname, '../', 'build', 'index.html')
+    )
+  );
+} else {
+  app.get('/', (req, res) => res.send('Please set to production'));
+}
 
 var generateRandomString = function (length) {
   var text = '';
@@ -75,3 +87,5 @@ app.get('/auth/token', (req, res) => {
 app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}`)
 })
+
+
